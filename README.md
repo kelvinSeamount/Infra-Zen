@@ -356,17 +356,18 @@ Replace `YOUR-GITHUB-USERNAME` with your actual GitHub username to make the buck
 ```bash
 # Create the bucket
 aws s3api create-bucket \
-  --bucket zen-pharma-terraform-state-YOUR-GITHUB-USERNAME \
-  --region us-east-1
+  --bucket zen-pharma-tf-state-YOUR-GITHUB-USERNAME \
+  --region eu-central-1 \
+  --create-bucket-configuration LocationConstraint=eu-central-1
 
 # Enable versioning (allows state rollback)
 aws s3api put-bucket-versioning \
-  --bucket zen-pharma-terraform-state-YOUR-GITHUB-USERNAME \
+  --bucket zen-pharma-tf-state-YOUR-GITHUB-USERNAME \
   --versioning-configuration Status=Enabled
 
 # Enable encryption
 aws s3api put-bucket-encryption \
-  --bucket zen-pharma-terraform-state-YOUR-GITHUB-USERNAME \
+  --bucket zen-pharma-tf-state-YOUR-GITHUB-USERNAME \
   --server-side-encryption-configuration '{
     "Rules": [{
       "ApplyServerSideEncryptionByDefault": {
@@ -377,15 +378,16 @@ aws s3api put-bucket-encryption \
 
 # Block all public access
 aws s3api put-public-access-block \
-  --bucket zen-pharma-terraform-state-YOUR-GITHUB-USERNAME \
+  --bucket zen-pharma-tf-state-YOUR-GITHUB-USERNAME \
   --public-access-block-configuration \
     "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+
 ```
 
 ### 5.2 Verify the Bucket
 
 ```bash
-aws s3 ls s3://zen-pharma-terraform-state-YOUR-GITHUB-USERNAME
+aws s3 ls s3://zen-pharma-tf-state-YOUR-GITHUB-USERNAME
 # Should return empty (no error)
 ```
 

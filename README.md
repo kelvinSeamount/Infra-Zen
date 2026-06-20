@@ -20,11 +20,12 @@ This guide walks you through setting up the zen-pharma infrastructure on your ow
 9. [Step 6 — GitHub Environment Setup](#9-step-6--github-environment-setup)
 10. [Step 7 — Provision Infrastructure via Pipeline](#10-step-7--provision-infrastructure-via-pipeline)
 11. [Step 8 — Verify the Infrastructure](#11-step-8--verify-the-infrastructure)
-12. [Infrastructure Details](#12-infrastructure-details)
-13. [Day-2 Operations](#13-day-2-operations)
-14. [Cluster Cleanup / Destroying Infrastructure](#14-destroying-infrastructure)
-15. [Troubleshooting](#15-troubleshooting)
-16. [Creating a GitHub PAT for zen-gitops](#17-creating-a-github-pat-for-zen-gitops)
+12. [Step 9 — Run Post-Provisioning Scripts](#12-step-9--run-post-provisioning-scripts)
+13. [Infrastructure Details](#13-infrastructure-details)
+14. [Day-2 Operations](#14-day-2-operations)
+15. [Cluster Cleanup / Destroying Infrastructure](#15-destroying-infrastructure)
+16. [Troubleshooting](#16-troubleshooting)
+17. [Creating a GitHub PAT for zen-gitops](#17-creating-a-github-pat-for-zen-gitops)
 
 ---
 
@@ -676,7 +677,70 @@ kubectl get namespaces
 
 ---
 
-## 12. Infrastructure Details
+## 12. Step 9 — Run Post-Provisioning Scripts
+
+After Terraform apply completes and the EKS cluster is verified, run the four scripts in order to install Kubernetes add-ons and configure the cluster.
+
+### 12.0 Make Scripts Executable (one-time)
+
+```bash
+chmod +x ./scripts/*.sh
+```
+
+> You only need to do this once. If you skip it you will get `permission denied` when trying to run any script.
+
+### 12.1 Script Execution Order
+
+**Script 1 — Install Kubernetes Prerequisites** (NGINX Ingress, ArgoCD, ESO, metrics-server)
+
+```bash
+./scripts/01-install-prerequisties.sh
+```
+
+> The script will prompt you for values interactively (cluster name, region, etc.). Requires EKS cluster to be `Active`.
+
+---
+
+**Script 2 — Bootstrap ArgoCD** (register zen-gitops repo, create AppProject, deploy Applications)
+
+```bash
+./scripts/02-bootstrap-argocd.sh
+```
+
+> Run after Script 1 completes successfully.
+
+---
+
+**Script 3 — Setup External Secrets**
+
+```bash
+./scripts/03-setup-external-secrets.sh
+```
+
+> Run after Script 2 completes successfully.
+
+---
+
+**Script 4 — Verify Deployment** (health checks for pods, ArgoCD apps, secrets, ingress)
+
+```bash
+./scripts/04-verify-deployment.sh
+```
+
+> Run last to confirm everything is healthy.
+
+### 12.2 Pre-flight Checks
+
+Before running any script, confirm your AWS identity and kubeconfig are pointing at the right cluster:
+
+```bash
+aws sts get-caller-identity
+kubectl config current-context
+```
+
+---
+
+## 13. Infrastructure Details
 
 ### 12.1 Networking
 
@@ -741,7 +805,7 @@ The role is restricted to:
 
 ---
 
-## 13. Day-2 Operations
+## 14. Day-2 Operations
 
 ### Making Infrastructure Changes
 
@@ -827,7 +891,7 @@ terraform plan \
 
 ---
 
-## 14. Destroying Infrastructure
+## 15. Destroying Infrastructure
 
 > **Warning**: This permanently deletes all infrastructure including the EKS cluster, RDS database, and all data. There is no undo.
 
@@ -902,7 +966,7 @@ aws s3api delete-bucket \
 
 ---
 
-## 15. Troubleshooting
+## 16. Troubleshooting
 
 ### Plan shows resources already exist (RepositoryAlreadyExistsException)
 

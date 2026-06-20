@@ -325,6 +325,9 @@ Save the **Access Key ID** and **Secret Access Key** — you will need these in 
 
 ### 4.2 Configure AWS CLI Locally
 
+Go to IAM —->select IAM user ——> create a new user. ( input user name) ——> click next ——> set permission  by clicking ( attach policies  & click on AdministratorAccess) ——> click next & create user ——> Select the the user you created ———> click on create access key——> scroll down and select others  ——> click on next ——> click create access key button & download cdv file , copy the Accesskey and secretkey then save  ——> click done button
+
+
 ```bash
 aws configure
 # AWS Access Key ID: <your-access-key-id>

@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # Terraform provider and module version updates
+  - package-ecosystem: "terraform"
+    directory: "/envs/dev"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "terraform"
+      - "dev"
+
+  - package-ecosystem: "terraform"
+    directory: "/envs/qa"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "terraform"
+      - "qa"
+
+  - package-ecosystem: "terraform"
+    directory: "/envs/prod"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "terraform"
+      - "prod"
+#Dependabot is like a personal assistant that checks if your tools are outdated. It looks at your project files and finds any dependencies that have newer versions available. Then, it creates pull requests to update those dependencies, making sure your project stays up-to-date and secure.

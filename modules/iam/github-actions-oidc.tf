@@ -60,8 +60,8 @@ data "aws_iam_policy_document" "github_actions_assume_role" {
       values = [
         "repo:${var.github_org}/zen-pharma-frontend-CI:ref:refs/heads/main",
         "repo:${var.github_org}/zen-pharma-frontend-CI:ref:refs/heads/develop",
-        "repo:${var.github_org}/zen-pharma-backend-CI:ref:refs/heads/main",
-        "repo:${var.github_org}/zen-pharma-backend-CI:ref:refs/heads/develop",
+        "repo:${var.github_org}/zen-pharama-backend-CI:ref:refs/heads/main",
+        "repo:${var.github_org}/zen-pharama-backend-CI:ref:refs/heads/develop",
       ]
     }
   }

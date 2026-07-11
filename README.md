@@ -50,12 +50,12 @@ AWS Account (eu-central-1)
 │       └── envs/prod/terraform.tfstate
 │
 ├── VPC  (10.0.0.0/16)
-│   ├── Public Subnets        10.0.1.0/24  (us-east-1a)  ]  NAT Gateway,
-│   │                         10.0.2.0/24  (us-east-1b)  ]  NLB, Ingress
-│   ├── Private EKS Subnets   10.0.3.0/24  (us-east-1a)  ]  EKS worker
-│   │                         10.0.4.0/24  (us-east-1b)  ]  nodes (private)
-│   └── Private RDS Subnets   10.0.5.0/24  (us-east-1a)  ]  RDS PostgreSQL
-│                             10.0.6.0/24  (us-east-1b)  ]  (private)
+│   ├── Public Subnets        10.0.1.0/24  (eu-central-1a)  ]  NAT Gateway,
+│   │                         10.0.2.0/24  (eu-central-1b)  ]  NLB, Ingress
+│   ├── Private EKS Subnets   10.0.3.0/24  (eu-central-1a)  ]  EKS worker
+│   │                         10.0.4.0/24  (eu-central-1b)  ]  nodes (private)
+│   └── Private RDS Subnets   10.0.5.0/24  (eu-central-1a)  ]  RDS PostgreSQL
+│                             10.0.6.0/24  (eu-central-1b)  ]  (private)
 │
 ├── EKS Cluster  (pharma-dev-cluster, Kubernetes 1.33)
 │   ├── Managed Node Group
@@ -333,7 +333,7 @@ Go to IAM —->select IAM user ——> create a new user. ( input user name) —
 aws configure
 # AWS Access Key ID: <your-access-key-id>
 # AWS Secret Access Key: <your-secret-access-key>
-# Default region name: us-east-1
+# Default region name: eu-central-1
 # Default output format: json
 ```
 
@@ -653,7 +653,7 @@ rds_endpoint     = "pharma-dev-postgres.xxxxxxxx.eu-central-1.rds.amazonaws.com"
 
 **ECR:**
 - Go to **AWS Console → ECR → Repositories**
-- Verify 5 repositories exist: `api-gateway`, `auth-service`, `pharma-ui`, `notification-service`, `drug-catalog-service`
+- Verify 5 repositories exist: `api-gateway`, `auth-service`, `manufacturing-service`, `notification-service`, `drug-catalog-service`,`inventory-service`,`supplier-services`, `pharma-ui`
 
 **Secrets Manager:**
 - Go to **AWS Console → Secrets Manager**
@@ -784,7 +784,7 @@ RDS is only accessible from EKS worker nodes via the security group — port 543
 
 ### 12.4 ECR Repositories
 
-All 5 repositories have:
+All 8 repositories have:
 - `image_tag_mutability = MUTABLE` — allows overwriting tags (useful in dev)
 - `scan_on_push = true` — automatic vulnerability scanning on every push
 - Lifecycle policy: keep last 10 images, expire older ones automatically
@@ -961,7 +961,7 @@ aws s3 rm s3://zen-pharma-terraform-state-YOUR-GITHUB-USERNAME --recursive
 # Delete the bucket
 aws s3api delete-bucket \
   --bucket zen-pharma-terraform-state-YOUR-GITHUB-USERNAME \
-  --region us-east-1
+  --region eu-central-1
 ```
 
 ---
@@ -974,7 +974,7 @@ ECR repositories cannot be destroyed if they contain images. If you recreated th
 
 **Fix — delete repos manually then re-run:**
 ```bash
-for repo in api-gateway auth-service pharma-ui notification-service drug-catalog-service; do
+for repo in api-gateway auth-service pharma-ui notification-service drug-catalog-service manufacturing-service inventory-service supplier-service; do
   aws ecr delete-repository \
     --repository-name $repo \
     --force \
@@ -1046,7 +1046,7 @@ If you only changed workflow files (`.github/workflows/`), the `paths` filter pr
 
 ```bash
 # Re-fetch credentials
-aws eks update-kubeconfig --region us-east-1 --name pharma-dev-cluster
+aws eks update-kubeconfig --region eu-central-1 --name pharma-dev-cluster
 
 # Check your AWS identity
 aws sts get-caller-identity

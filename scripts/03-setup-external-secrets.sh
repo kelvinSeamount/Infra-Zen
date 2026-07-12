@@ -3,7 +3,8 @@
 # Stage 2 - Configure External Secrets Operator
 #
 # Creates a ClusterSecretStore and ExternalSecrets so pods can pull
-# db-credentials and jwt-secret from AWS Secrets Manager automatically.
+# db-credentials, jwt-secret and the Fluent Bit Elasticsearch API key
+# from AWS Secrets Manager automatically.
 #
 # Uses IRSA (IAM Roles for Service Accounts) - no static AWS keys stored
 # anywhere. The IAM role is created by Terraform in Stage 1.
@@ -141,8 +142,9 @@ echo "  ESO Role ARN : $ESO_ROLE_ARN"
 echo "  ---------------------------------"
 echo ""
 echo "  Secrets will be synced from these Secrets Manager paths:"
-echo "    /pharma/$ENV/db-credentials  ->  Kubernetes Secret 'db-credentials'"
+echo "    /pharma/$ENV/db-credentials   ->  Kubernetes Secret 'db-credentials'"
 echo "    /pharma/$ENV/jwt-secret       ->  Kubernetes Secret 'jwt-secret'"
+echo "    /pharma/$ENV/elastic-api-key  ->  Kubernetes Secret 'fluent-bit-elastic-credentials'"
 echo ""
 echo -ne "  Continue? [Y/n]: "
 read -r confirm
@@ -291,6 +293,27 @@ spec:
         property: secret
 EOF
 
+cat <<EOF | kubectl apply -f -
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: fluent-bit-elastic-credentials
+  namespace: ${ENV}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  target:
+    name: fluent-bit-elastic-credentials
+    creationPolicy: Owner
+  data:
+    - secretKey: api_key
+      remoteRef:
+        key: /pharma/${ENV}/elastic-api-key
+        property: api_key
+EOF
+
 log "ExternalSecrets created in namespace '$ENV'."
 
 # =============================================================================
@@ -309,12 +332,14 @@ while [[ $ELAPSED -lt $TIMEOUT ]]; do
     -o jsonpath='{.status.conditions[?(@.type=="Ready")].reason}' 2>/dev/null || echo "NotFound")
   JWT_STATUS=$(kubectl get externalsecret jwt-secret -n "$ENV" \
     -o jsonpath='{.status.conditions[?(@.type=="Ready")].reason}' 2>/dev/null || echo "NotFound")
+  ELASTIC_STATUS=$(kubectl get externalsecret fluent-bit-elastic-credentials -n "$ENV" \
+    -o jsonpath='{.status.conditions[?(@.type=="Ready")].reason}' 2>/dev/null || echo "NotFound")
 
-  if [[ "$DB_STATUS" == "SecretSynced" && "$JWT_STATUS" == "SecretSynced" ]]; then
+  if [[ "$DB_STATUS" == "SecretSynced" && "$JWT_STATUS" == "SecretSynced" && "$ELASTIC_STATUS" == "SecretSynced" ]]; then
     ALL_SYNCED=true; break
   fi
 
-  echo "  db-credentials: $DB_STATUS | jwt-secret: $JWT_STATUS -- waiting..."
+  echo "  db-credentials: $DB_STATUS | jwt-secret: $JWT_STATUS | fluent-bit-elastic-credentials: $ELASTIC_STATUS -- waiting..."
   sleep 10; ELAPSED=$((ELAPSED+10))
 done
 
@@ -323,13 +348,14 @@ kubectl get externalsecret -n "$ENV"
 echo ""
 
 if [[ "$ALL_SYNCED" == "true" ]]; then
-  log "Both secrets synced successfully into namespace '$ENV'."
+  log "All secrets synced successfully into namespace '$ENV'."
 else
   warn "Secrets not yet synced. Common causes:"
   warn ""
   warn "  1. Secrets Manager paths do not exist - create them first:"
-  warn "       /pharma/$ENV/db-credentials  (JSON: {\"username\":\"...\",\"password\":\"...\"})"
+  warn "       /pharma/$ENV/db-credentials   (JSON: {\"username\":\"...\",\"password\":\"...\"})"
   warn "       /pharma/$ENV/jwt-secret       (JSON: {\"secret\":\"...\"})"
+  warn "       /pharma/$ENV/elastic-api-key  (JSON: {\"api_key\":\"...\"})"
   warn ""
   warn "  2. IAM role '$ESO_ROLE_NAME' is missing secretsmanager:GetSecretValue"
   warn ""

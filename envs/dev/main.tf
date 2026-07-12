@@ -71,10 +71,11 @@ module "iam" {
 module "secrets_manager" {
   source = "../../modules/secret-manager"
 
-  project     = "pharma"
-  env         = "dev"
-  db_username = "pharmaadmin"
-  db_password = var.db_password
-  jwt_secret  = var.jwt_secret
+  project         = "pharma"
+  env             = "dev"
+  db_username     = "pharmaadmin"
+  db_password     = var.db_password
+  jwt_secret      = var.jwt_secret
+  elastic_api_key = var.elastic_api_key
 }
 

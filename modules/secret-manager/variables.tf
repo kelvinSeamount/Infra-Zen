@@ -25,3 +25,9 @@ variable "jwt_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "elastic_api_key" {
+  description = "Elasticsearch API key for Fluent Bit to store in Secrets Manager"
+  type        = string
+  sensitive   = true
+}

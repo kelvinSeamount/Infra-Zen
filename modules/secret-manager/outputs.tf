@@ -7,3 +7,8 @@ output "jwt_secret_arn" {
   description = "ARN of the JWT signing secret"
   value       = aws_secretsmanager_secret.jwt_secret.arn
 }
+
+output "elastic_api_key_arn" {
+  description = "ARN of the Elasticsearch API key secret"
+  value       = aws_secretsmanager_secret.elastic_api_key.arn
+}

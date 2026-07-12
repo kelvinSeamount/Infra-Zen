@@ -36,3 +36,22 @@ resource "aws_secretsmanager_secret_version" "jwt_secret" {
     secret = var.jwt_secret
   })
 }
+
+resource "aws_secretsmanager_secret" "elastic_api_key" {
+  name                    = "/pharma/${var.env}/elastic-api-key"
+  description             = "Elasticsearch API key for Fluent Bit log shipping in the pharma ${var.env} environment"
+  recovery_window_in_days = 0
+
+  tags = {
+    Name    = "/pharma/${var.env}/elastic-api-key"
+    Env     = var.env
+    Project = var.project
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "elastic_api_key" {
+  secret_id = aws_secretsmanager_secret.elastic_api_key.id
+  secret_string = jsonencode({
+    api_key = var.elastic_api_key
+  })
+}

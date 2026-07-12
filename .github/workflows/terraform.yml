@@ -74,25 +74,31 @@ jobs:
 
       - name: Resolve environment secrets
         env:
-          DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
-          DEV_JWT_SECRET:   ${{ secrets.DEV_JWT_SECRET }}
-          QA_DB_PASSWORD:   ${{ secrets.QA_DB_PASSWORD }}
-          QA_JWT_SECRET:    ${{ secrets.QA_JWT_SECRET }}
-          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-          PROD_JWT_SECRET:  ${{ secrets.PROD_JWT_SECRET }}
+          DEV_DB_PASSWORD:      ${{ secrets.DEV_DB_PASSWORD }}
+          DEV_JWT_SECRET:       ${{ secrets.DEV_JWT_SECRET }}
+          DEV_ELASTIC_API_KEY:  ${{ secrets.DEV_ELASTIC_API_KEY }}
+          QA_DB_PASSWORD:       ${{ secrets.QA_DB_PASSWORD }}
+          QA_JWT_SECRET:        ${{ secrets.QA_JWT_SECRET }}
+          QA_ELASTIC_API_KEY:   ${{ secrets.QA_ELASTIC_API_KEY }}
+          PROD_DB_PASSWORD:     ${{ secrets.PROD_DB_PASSWORD }}
+          PROD_JWT_SECRET:      ${{ secrets.PROD_JWT_SECRET }}
+          PROD_ELASTIC_API_KEY: ${{ secrets.PROD_ELASTIC_API_KEY }}
         run: |
           case "${{ env.TARGET_ENV }}" in
             dev)
-              echo "TF_DB_PASSWORD=${DEV_DB_PASSWORD}"   >> $GITHUB_ENV
-              echo "TF_JWT_SECRET=${DEV_JWT_SECRET}"     >> $GITHUB_ENV
+              echo "TF_DB_PASSWORD=${DEV_DB_PASSWORD}"        >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${DEV_JWT_SECRET}"          >> $GITHUB_ENV
+              echo "TF_ELASTIC_API_KEY=${DEV_ELASTIC_API_KEY}"  >> $GITHUB_ENV
               ;;
             qa)
-              echo "TF_DB_PASSWORD=${QA_DB_PASSWORD}"    >> $GITHUB_ENV
-              echo "TF_JWT_SECRET=${QA_JWT_SECRET}"      >> $GITHUB_ENV
+              echo "TF_DB_PASSWORD=${QA_DB_PASSWORD}"         >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${QA_JWT_SECRET}"           >> $GITHUB_ENV
+              echo "TF_ELASTIC_API_KEY=${QA_ELASTIC_API_KEY}"   >> $GITHUB_ENV
               ;;
             prod)
-              echo "TF_DB_PASSWORD=${PROD_DB_PASSWORD}"  >> $GITHUB_ENV
-              echo "TF_JWT_SECRET=${PROD_JWT_SECRET}"    >> $GITHUB_ENV
+              echo "TF_DB_PASSWORD=${PROD_DB_PASSWORD}"       >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${PROD_JWT_SECRET}"         >> $GITHUB_ENV
+              echo "TF_ELASTIC_API_KEY=${PROD_ELASTIC_API_KEY}" >> $GITHUB_ENV
               ;;
           esac
 
@@ -116,6 +122,7 @@ jobs:
             -var="aws_region=${{ env.AWS_REGION }}" \
             -var="db_password=${{ env.TF_DB_PASSWORD }}" \
             -var="jwt_secret=${{ env.TF_JWT_SECRET }}" \
+            -var="elastic_api_key=${{ env.TF_ELASTIC_API_KEY }}" \
             -var="github_org=${{ vars.GH_ORG }}" \
             -out=tfplan \
             -no-color
@@ -217,25 +224,31 @@ jobs:
 
       - name: Resolve environment secrets
         env:
-          DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
-          DEV_JWT_SECRET:   ${{ secrets.DEV_JWT_SECRET }}
-          QA_DB_PASSWORD:   ${{ secrets.QA_DB_PASSWORD }}
-          QA_JWT_SECRET:    ${{ secrets.QA_JWT_SECRET }}
-          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
-          PROD_JWT_SECRET:  ${{ secrets.PROD_JWT_SECRET }}
+          DEV_DB_PASSWORD:      ${{ secrets.DEV_DB_PASSWORD }}
+          DEV_JWT_SECRET:       ${{ secrets.DEV_JWT_SECRET }}
+          DEV_ELASTIC_API_KEY:  ${{ secrets.DEV_ELASTIC_API_KEY }}
+          QA_DB_PASSWORD:       ${{ secrets.QA_DB_PASSWORD }}
+          QA_JWT_SECRET:        ${{ secrets.QA_JWT_SECRET }}
+          QA_ELASTIC_API_KEY:   ${{ secrets.QA_ELASTIC_API_KEY }}
+          PROD_DB_PASSWORD:     ${{ secrets.PROD_DB_PASSWORD }}
+          PROD_JWT_SECRET:      ${{ secrets.PROD_JWT_SECRET }}
+          PROD_ELASTIC_API_KEY: ${{ secrets.PROD_ELASTIC_API_KEY }}
         run: |
           case "${{ env.TARGET_ENV }}" in
             dev)
-              echo "TF_DB_PASSWORD=${DEV_DB_PASSWORD}"   >> $GITHUB_ENV
-              echo "TF_JWT_SECRET=${DEV_JWT_SECRET}"     >> $GITHUB_ENV
+              echo "TF_DB_PASSWORD=${DEV_DB_PASSWORD}"        >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${DEV_JWT_SECRET}"          >> $GITHUB_ENV
+              echo "TF_ELASTIC_API_KEY=${DEV_ELASTIC_API_KEY}"  >> $GITHUB_ENV
               ;;
             qa)
-              echo "TF_DB_PASSWORD=${QA_DB_PASSWORD}"    >> $GITHUB_ENV
-              echo "TF_JWT_SECRET=${QA_JWT_SECRET}"      >> $GITHUB_ENV
+              echo "TF_DB_PASSWORD=${QA_DB_PASSWORD}"         >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${QA_JWT_SECRET}"           >> $GITHUB_ENV
+              echo "TF_ELASTIC_API_KEY=${QA_ELASTIC_API_KEY}"   >> $GITHUB_ENV
               ;;
             prod)
-              echo "TF_DB_PASSWORD=${PROD_DB_PASSWORD}"  >> $GITHUB_ENV
-              echo "TF_JWT_SECRET=${PROD_JWT_SECRET}"    >> $GITHUB_ENV
+              echo "TF_DB_PASSWORD=${PROD_DB_PASSWORD}"       >> $GITHUB_ENV
+              echo "TF_JWT_SECRET=${PROD_JWT_SECRET}"         >> $GITHUB_ENV
+              echo "TF_ELASTIC_API_KEY=${PROD_ELASTIC_API_KEY}" >> $GITHUB_ENV
               ;;
           esac
 
@@ -248,6 +261,7 @@ jobs:
             -var="aws_region=${{ env.AWS_REGION }}" \
             -var="db_password=${{ env.TF_DB_PASSWORD }}" \
             -var="jwt_secret=${{ env.TF_JWT_SECRET }}" \
+            -var="elastic_api_key=${{ env.TF_ELASTIC_API_KEY }}" \
             -var="github_org=${{ vars.GH_ORG }}" \
             -auto-approve \
             -no-color

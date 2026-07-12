@@ -10,6 +10,12 @@ variable "jwt_secret" {
   sensitive   = true
 }
 
+variable "elastic_api_key" {
+  description = "Elasticsearch API key for Fluent Bit log shipping"
+  type        = string
+  sensitive   = true
+}
+
 variable "github_org" {
   description = "GitHub username or organization that owns zen-pharma-frontend and zen-pharma-backend (e.g. john-smith)"
   type        = string

@@ -20,7 +20,7 @@ module "eks" {
   env                = "dev"
   cluster_version    = "1.33"
   subnet_ids         = module.vpc.private_eks_subnet_ids
-  node_instance_type = "t3.small"
+  node_instance_type = "t3.medium"
   desired_capacity   = 3
   min_size           = 1
   max_size           = 4

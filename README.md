@@ -319,7 +319,7 @@ Go to **AWS Console → IAM → Users → Create user**:
 - Leave all fields unmarked and click next 
 - Permissions: Attach the following managed policies:
 - `AdministratorAccess` (simplest for learning — scope down in production) and create the user 
--  On the same user go to Security credentials and create access key for the user  
+-  On the same user go to Security credentials and create access key for the user (select others and create next) 
 
 Save the **Access Key ID** and **Secret Access Key** — you will need these in Step 5.
 

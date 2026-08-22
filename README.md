@@ -315,8 +315,8 @@ zen-infra/
 For the initial bootstrap (before OIDC is set up via Terraform), you need an IAM user with programmatic access.
 
 Go to **AWS Console → IAM → Users → Create user**:
-- Username: `terraform-ci`
-- Access type: Programmatic access
+- Username: `terraform-ci` leave all 
+- Leave all fields unmarked and click next 
 - Permissions: Attach the following managed policies:
   - `AdministratorAccess` (simplest for learning — scope down in production)
 
